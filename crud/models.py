@@ -23,27 +23,6 @@ class Instructor(User):
                "Last name: " + self.last_name + ", " + \
                "Is full time: " + str(self.full_time) + ", " + \
                "Total Learners: " + str(self.total_learners)
-
-# Course model
-class Course(models.Model):
-    name = models.CharField(null=False, max_length=100, default='online course')
-    description = models.CharField(max_length=500)
-    # Many-To-Many relationship with Instructor
-    instructors = models.ManyToManyField(Instructor)
-    # Many-To-Many relationship with Learner
-    learners = models.ManyToManyField(Learner)
-    
-    # Create a toString method for object string representation
-    def __str__(self):
-        return "Name: " + self.name + "," + \
-            "Description: " + self.description
-
-# Lesson
-class Lesson(models.Model):
-    title = models.CharField(max_length=200, default="title")
-    course = models.ForeignKey(Course, null=True, on_delete=models.CASCADE)
-    content = models.TextField()
-
 # Learner model
 class Learner(User):
     STUDENT = 'student'
@@ -70,6 +49,18 @@ class Learner(User):
                 "Date of Birth: " + str(self.dob) + ", " + \
                 "Occupation: " + self.occupation + ", " + \
                 "Social Link: " + self.social_link
+# Course model
+class Course(models.Model):
+    name = models.CharField(null=False, max_length=100, default='online course')
+    description = models.CharField(max_length=500)
+    # Many-To-Many relationship with Instructors
+    instructors = models.ManyToManyField(Instructor)
+    # Many-To-Many relationship with Learner
+    learners = models.ManyToManyField(Learner, through='Enrollment')
+
+    def __str__(self):
+        return "Name: " + self.name + "," + \
+                 "Description: " + self.description    
 
 # Enrollment model as a lookup table with additional enrollment info
 class Enrollment(models.Model):
@@ -88,3 +79,11 @@ class Enrollment(models.Model):
     # Enrollment mode
     mode = models.CharField(max_length=5, choices=COURSE_MODES, default=AUDIT)
    
+
+
+# Lesson
+class Lesson(models.Model):
+    title = models.CharField(max_length=200, default="title")
+    course = models.ForeignKey(Course, null=True, on_delete=models.CASCADE)
+    content = models.TextField()
+
